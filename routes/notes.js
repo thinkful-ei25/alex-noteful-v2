@@ -84,7 +84,7 @@ router.put('/:id', (req, res, next) => {
   const id = req.params.id;
 
   /***** Never trust users - validate input *****/
-  const { title, content, folderId } = req.body;
+  const { title, content, folderId, tags } = req.body;
   
   const updateObj ={
     title: title,
@@ -122,15 +122,13 @@ router.put('/:id', (req, res, next) => {
 
 // Post (insert) an item
 router.post('/', (req, res, next) => {
-  const { title, content, folderId } = req.body;
+  const { title, content, folderId, tags} = req.body;
 
   const newItem = {
     title: title, 
     content: content, 
     folder_id: folderId
   };
-
-  let noteId;
 
   /***** Never trust users - validate input *****/
   if (!newItem.title) {
@@ -139,20 +137,35 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
+  let noteId;
+
   knex
     .insert(newItem)
     .into('notes')
     .returning('id')
     .then(([id]) => {
       noteId= id;
+      const tagsInsert = tags.map(tagId => ({note_id: noteId, tag_id: tagId}));
       return knex
-        .select('notes.id', 'title', 'content', 'folder_id as folderId', 'folders.name as folderName')
+        .insert(tagsInsert)
+        .into('notes_tags');
+    })
+    .then(() => {
+      return knex
+        .select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName', 'tags.id as tagId', 'tags.name as tagName')        
         .from('notes')
         .leftJoin('folders', 'notes.folder_id', 'folders.id')
+        .leftJoin('notes_tags', 'notes.id','notes_tags.note_id')
+        .leftJoin('tags', 'notes_tags.tag_id', 'tags.id')
         .where('notes.id', noteId);
     })
-    .then(([result]) => {
-      res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
+    .then(results => {
+      if (results) {
+        const hydrated = hydrateNotes(results)[0];
+        res.location(`${req.originalUrl}/${hydrated.id}`).status(201).json(hydrated);
+      } else {
+        next();
+      }
     })
     .catch(err => {
       next(err);
