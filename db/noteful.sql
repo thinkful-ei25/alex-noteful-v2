@@ -1,6 +1,16 @@
 -- psql -U dev -d noteful-app -f ./db/noteful.sql
-
+DROP TABLE IF EXISTS notes_tags;
+DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS notes;
+DROP TABLE IF EXISTS folders;
+
+
+
+CREATE TABLE folders(
+  id serial PRIMARY KEY,
+  name text NOT NULL
+);
+ALTER SEQUENCE folders_id_seq RESTART WITH 100;
 
 CREATE TABLE notes (
   id serial PRIMARY KEY,
@@ -11,6 +21,32 @@ CREATE TABLE notes (
 );
 
 ALTER SEQUENCE notes_id_seq RESTART WITH 1000;
+
+
+CREATE TABLE tags(
+  id serial PRIMARY KEY,
+  name text UNIQUE NOT NULL
+);
+
+ALTER SEQUENCE tags_id_seq RESTART WITH 10;
+
+CREATE TABLE notes_tags(
+  note_id INTEGER NOT NULL REFERENCES notes ON DELETE CASCADE,
+  tag_id INTEGER NOT NULL REFERENCES tags ON DELETE CASCADE
+);
+
+
+INSERT INTO tags (name) VALUES
+  ('Great'),
+  ('Funny'),
+  ('Informative'),
+  ('Spooky');
+
+INSERT INTO folders (name) VALUES
+  ('Archive'),
+  ('Drafts'),
+  ('Personal'),
+  ('Work');
 
 INSERT INTO notes (title, content, folder_id) VALUES
   (
@@ -64,20 +100,12 @@ INSERT INTO notes (title, content, folder_id) VALUES
     100
   );
 
+  INSERT INTO notes_tags (note_id, tag_id) VALUES
+  (1003, 10),
+  (1002, 11),
+  (1001, 12),
+  (1005, 13),
+  (1005, 10);
+
 -- -- get all notes
 -- SELECT * FROM notes;
-
-DROP TABLE IF EXISTS folders;
-
-CREATE TABLE folders(
-  id serial PRIMARY KEY,
-  name text NOT NULL
-);
-
-ALTER SEQUENCE folders_id_seq RESTART WITH 100;
-
-INSERT INTO folders (name) VALUES
-  ('Archive'),
-  ('Drafts'),
-  ('Personal'),
-  ('Work');

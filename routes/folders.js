@@ -2,9 +2,9 @@
 
 const express = require('express');
 
-const router = express.Router();
-
 const knex =require('../knex');
+
+const router = express.Router();
 
 //GET ALL FOLDERS
 router.get('/', (req, res, next) => {
@@ -84,7 +84,7 @@ router.post('/', (req, res, next) => {
     .into('folders')
     .returning('*')
     .then(results => {
-      res.status(201).json(results[0]);
+      res.location(`${req.originalUrl}/${results[0].id}`).status(201).json(results[0]);
     })
     .catch(err => {
       next(err);
