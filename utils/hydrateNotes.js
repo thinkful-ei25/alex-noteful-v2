@@ -21,3 +21,5 @@ function hydrateNotes(input) {
   return hydrated;
 }
 
+module.exports = hydrateNotes;
+
