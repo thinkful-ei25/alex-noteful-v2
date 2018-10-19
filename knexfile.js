@@ -10,5 +10,10 @@ module.exports = {
   production: {
     client: 'pg',
     connection: process.env.DATABASE_URL
+  },
+  test: {
+    client:'pg',
+    connection: process.env.TEST_DATABASE_URL || 'postgresql://dev:goodbyeprivacy1@localhost:5432/noteful-test',
+    pool: { min: 1, max: 2 }
   }
 };

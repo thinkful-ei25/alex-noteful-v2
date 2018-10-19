@@ -67,7 +67,7 @@ router.get('/:id', (req, res, next) => {
     .leftJoin('tags', 'notes_tags.tag_id', 'tags.id')
     .where('notes.id', id)
     .then(results => {
-      if (results) {
+      if (results && results.length > 0) {
         const hydrated = hydrateNotes(results)[0];
         res.json(hydrated);
       } else {
@@ -104,11 +104,15 @@ router.put('/:id', (req, res, next) => {
     .from('notes')
     .where('notes.id', id)
     .update(updateObj)
-    .then(() => {
-      return knex
-        .from('notes_tags')
-        .where('notes_tags.note_id', id)
-        .del();
+    .then((results) => {
+      if (results){
+        return knex
+          .from('notes_tags')
+          .where('notes_tags.note_id', id)
+          .del();
+      } else {
+        next();
+      }
     })
     .then(() => {
       const tagsInsert = tags.map(tagId => ({note_id: id, tag_id: tagId}));

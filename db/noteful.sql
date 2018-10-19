@@ -1,4 +1,6 @@
 -- psql -U dev -d noteful-app -f ./db/noteful.sql
+-- psql -U dev -d noteful-test -f ./db/noteful.sql
+
 DROP TABLE IF EXISTS notes_tags;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS notes;
@@ -48,7 +50,7 @@ INSERT INTO folders (name) VALUES
   ('Personal'),
   ('Work');
 
-INSERT INTO notes (title, content, folder_id, tags) VALUES
+INSERT INTO notes (title, content, folder_id) VALUES
   (
     '5 life lessons learned from cats',
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
