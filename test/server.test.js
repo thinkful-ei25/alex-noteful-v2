@@ -129,7 +129,7 @@ describe('Noteful API', function() {
 
   describe('POST /api/notes', function(){
     it('should create and return a new item when provided valid data', function(){
-      const newItem = { title:"testarticle", content:"testcontent", folder_id: 100, tags:[10] };
+      const newItem = { title:'testarticle', content:'testcontent', folder_id: 100, tags:[10] };
       return chai.request(app)
         .post('/api/notes')
         .send(newItem)
@@ -143,7 +143,7 @@ describe('Noteful API', function() {
     });
 
     it('should return an error when missing "title" field', function(){
-      const newItem = { content:"testcontent", folder_id: 100, tags:[10] };
+      const newItem = { content:'testcontent', folder_id: 100, tags:[10] };
       return chai.request(app)
         .post('/api/notes')
         .send(newItem)
